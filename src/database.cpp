@@ -52,6 +52,7 @@
 #include <QInputDialog>
 #include <QCryptographicHash>
 #include <QPair>
+#include <algorithm>
 
 #include "Algorithms.h"
 #include "brewnote.h"
@@ -5274,7 +5275,7 @@ void Database::copyDatabase( Brewtarget::DBTypes oldType, Brewtarget::DBTypes ne
          }
          // We need to manually reset the sequences
          if ( newType == Brewtarget::PGSQL ) {
-            QString seq = QString("SELECT setval('%1_id_seq',%2)").arg(table).arg(maxid);
+            QString seq = QString("SELECT setval('%1_id_seq',%2)").arg(table).arg(std::max(1, maxid));
             QSqlQuery updateSeq(seq, newDb);
 
             if ( ! updateSeq.exec(seq) )
