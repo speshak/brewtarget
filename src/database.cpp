@@ -5229,6 +5229,8 @@ void Database::copyDatabase( Brewtarget::DBTypes oldType, Brewtarget::DBTypes ne
       if ( table == "settings" || table == "bt_alltables" )
          continue;
 
+      Brewtarget::logI(QString("Transfering table %1").arg(table));
+
       QString findAllQuery = QString("SELECT * FROM %1").arg(table);
       try {
 
