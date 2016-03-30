@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Install packages
+      portinstall:
+        name={{item}}
+        state=present
+        use_packages=yes
+      with_items:
+        - devel/cmake
+        - qt5-core
+        - postgresql95-server
+        - postgresql95-client
+
