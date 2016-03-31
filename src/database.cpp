@@ -5217,6 +5217,8 @@ void Database::copyDatabase( Brewtarget::DBTypes oldType, Brewtarget::DBTypes ne
 
    QStringList tables = allTablesInOrder(readOld);
 
+   Brewtarget::logI(QString("Copying database"));
+
    // There are a lot of tables to process
    foreach( QString table, tables ) {
       QSqlField field;
@@ -5274,9 +5276,18 @@ void Database::copyDatabase( Brewtarget::DBTypes oldType, Brewtarget::DBTypes ne
             // and execute
             if ( ! insertNew.exec() )
                throw QString("Could not insert new row %1 : %2").arg(insertNew.lastQuery()).arg(insertNew.lastError().text());
+
+            if ( idx % 10 == 0 || idx == readOld.size() )
+              Brewtarget::logI(QString("Transfered %1 rows").arg(idx));
          }
+
+         if( readOld.size() == 0)
+           Brewtarget::logI(QString("No rows to transfer"));
+
          // We need to manually reset the sequences
          if ( newType == Brewtarget::PGSQL ) {
+            Brewtarget::logI(QString("Resetting %1_id_seq to %2").arg(table).arg(std::max(1, maxid)));
+
             QString seq = QString("SELECT setval('%1_id_seq',%2)").arg(table).arg(std::max(1, maxid));
             QSqlQuery updateSeq(seq, newDb);
 
@@ -5293,5 +5304,7 @@ void Database::copyDatabase( Brewtarget::DBTypes oldType, Brewtarget::DBTypes ne
 
       newDb.commit();
    }
+
+   Brewtarget::logI(QString("Copying database complete"));
 }
 
